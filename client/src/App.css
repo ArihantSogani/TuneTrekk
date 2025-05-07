@@ -1,0 +1,62 @@
+/* Global Styles */
+/* @format */
+/* postcss */
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  min-height: 100vh;
+}
+
+h1, h2 {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+/* Spacing for content below the fixed navbar */
+body {
+  padding-top: 80px; /* Adjust based on navbar height */
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.navbar a:hover {
+  background-color: #444;
+}
+
+/* App.css */
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
