@@ -12,10 +12,27 @@ import {
   FormLabel,
   FormErrorMessage,
   Link as ChakraLink,
-  useColorModeValue
+  useToken,
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 
-// const API_BASE_URL = 'http://localhost:5000';
+const MotionBox = motion(Box);
+const MotionHeading = motion(Heading);
+const MotionText = motion(Text);
+const MotionStack = motion(Stack);
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.15,
+      duration: 0.7,
+      ease: 'easeOut',
+    },
+  }),
+};
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -24,6 +41,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [brandPurple] = useToken('colors', ['brand.500']);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -64,20 +82,56 @@ const Register = () => {
     }
   };
 
-  const cardBg = useColorModeValue('white', 'gray.800');
-  const cardColor = useColorModeValue('gray.800', 'white');
-  const inputBg = useColorModeValue('gray.50', 'gray.700');
-
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg={useColorModeValue('gray.50', 'gray.900')}>
-      <Box bg={cardBg} color={cardColor} p={8} borderRadius="xl" boxShadow="lg" w="100%" maxW="400px">
-        <Heading as="h1" size="xl" mb={2} textAlign="center">Register</Heading>
-        <Text fontSize="md" color={useColorModeValue('gray.500', 'gray.300')} mb={6} textAlign="center">Create your TuneTrekk account</Text>
+    <Box
+      minH="100vh"
+      w="full"
+      px={{ base: 2, md: 8 }}
+      py={12}
+      pt={{ base: 24, md: 28 }}
+      sx={{
+        background: `radial-gradient(ellipse at 50% 40%, #1A1130 0%, #0D0C0F 100%)`,
+      }}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <MotionBox
+        maxW="sm"
+        w="full"
+        mx="auto"
+        bg="whiteAlpha.50"
+        borderRadius="2xl"
+        boxShadow="0 4px 24px 0 rgba(0,0,0,0.10)"
+        border="1px solid rgba(255,255,255,0.10)"
+        backdropFilter="blur(8px)"
+        p={{ base: 6, md: 10 }}
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+      >
+        <MotionHeading
+          as="h1"
+          size="2xl"
+          color="white"
+          textAlign="center"
+          fontWeight="extrabold"
+          mb={4}
+          letterSpacing="tight"
+          variants={fadeInUp}
+          custom={0}
+        >
+          Register
+        </MotionHeading>
+        <MotionText fontSize="md" color="gray.300" mb={6} textAlign="center" variants={fadeInUp} custom={1}>
+          Create your TuneTrekk account
+        </MotionText>
         {error && <Text color="red.500" mb={4} textAlign="center">{error}</Text>}
         <form onSubmit={handleSubmit}>
-          <Stack spacing={4}>
+          <MotionStack spacing={4} variants={fadeInUp} custom={2}>
             <FormControl isInvalid={!!error && !username}>
-              <FormLabel htmlFor="username">Username</FormLabel>
+              <FormLabel htmlFor="username" color="white">Username</FormLabel>
               <Input
                 id="username"
                 name="username"
@@ -87,12 +141,14 @@ const Register = () => {
                 onChange={e => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                bg={inputBg}
+                bg="whiteAlpha.100"
+                color="white"
+                _placeholder={{ color: 'gray.400' }}
               />
               <FormErrorMessage>Username is required.</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!error && !email}>
-              <FormLabel htmlFor="email">Email</FormLabel>
+              <FormLabel htmlFor="email" color="white">Email</FormLabel>
               <Input
                 id="email"
                 name="email"
@@ -102,12 +158,14 @@ const Register = () => {
                 onChange={e => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                bg={inputBg}
+                bg="whiteAlpha.100"
+                color="white"
+                _placeholder={{ color: 'gray.400' }}
               />
               <FormErrorMessage>Email is required.</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!error && !password}>
-              <FormLabel htmlFor="password">Password</FormLabel>
+              <FormLabel htmlFor="password" color="white">Password</FormLabel>
               <Input
                 id="password"
                 name="password"
@@ -117,12 +175,14 @@ const Register = () => {
                 onChange={e => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                bg={inputBg}
+                bg="whiteAlpha.100"
+                color="white"
+                _placeholder={{ color: 'gray.400' }}
               />
               <FormErrorMessage>Password is required.</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!error && !confirmPassword}>
-              <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+              <FormLabel htmlFor="confirmPassword" color="white">Confirm Password</FormLabel>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -132,20 +192,22 @@ const Register = () => {
                 onChange={e => setConfirmPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                bg={inputBg}
+                bg="whiteAlpha.100"
+                color="white"
+                _placeholder={{ color: 'gray.400' }}
               />
               <FormErrorMessage>Confirm your password.</FormErrorMessage>
             </FormControl>
             <Button type="submit" colorScheme="brand" size="lg" w="100%" isLoading={loading} loadingText="Registering...">
               Register
             </Button>
-          </Stack>
+          </MotionStack>
         </form>
-        <Text mt={4} fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')} textAlign="center">
+        <Text mt={4} fontSize="sm" color="gray.400" textAlign="center">
           Already have an account?{' '}
-          <ChakraLink color="brand.500" href="/login">Login</ChakraLink>
+          <ChakraLink color="brand.400" href="/login">Login</ChakraLink>
         </Text>
-      </Box>
+      </MotionBox>
     </Box>
   );
 };
