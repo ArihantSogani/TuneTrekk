@@ -64,8 +64,8 @@ const Explore = ({ searchQuery: propSearchQuery }) => {
       setError(null);
       try {
         const url = selectedGenre
-          ? `http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=${selectedGenre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
-          : `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`;
+          ? `https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=${selectedGenre}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
+          : `https://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`;
         const response = await axios.get(url);
         const trackData = response.data.tracks.track;
         setTracks(Array.isArray(trackData) ? trackData : []);
