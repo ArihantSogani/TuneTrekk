@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Login.module.css';
+import {
+  Box,
+  Heading,
+  Text,
+  Input,
+  Button,
+  Stack,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Link as ChakraLink,
+  useColorModeValue
+} from '@chakra-ui/react';
+
+// import styles from "./Login.module.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -36,7 +50,6 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Handle both possible response formats
         let userData;
         let token = data.token;
 
@@ -72,43 +85,59 @@ const Login = () => {
     }
   };
 
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const cardColor = useColorModeValue('gray.800', 'white');
+  const inputBg = useColorModeValue('gray.50', 'gray.700');
+
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Login</h1>
-        <p className={styles.subtitle}>Access your music journey</p>
-        {error && <p className={styles.error}>{error}</p>}
+    <Box minH="90vh" display="flex" alignItems="center" justifyContent="center" bg={useColorModeValue('gray.50', 'gray.900')}>
+      <Box bg={cardBg} color={cardColor} p={8} borderRadius="xl" boxShadow="lg" w="100%" maxW="400px" textAlign="center">
+        <Heading as="h1" size="xl" mb={2}>Login</Heading>
+        <Text fontSize="md" color={useColorModeValue('gray.500', 'gray.300')} mb={6}>Access your music journey</Text>
+        {error && <Text color="red.500" mb={4}>{error}</Text>}
         <form onSubmit={handleSubmit}>
-          <input
-            className={styles.input}
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            className={styles.input}
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
+          <Stack spacing={4}>
+            <FormControl isInvalid={!!error && !formData.email}>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                autoComplete="email"
+                bg={inputBg}
+              />
+              <FormErrorMessage>Email is required.</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!error && !formData.password}>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                autoComplete="current-password"
+                bg={inputBg}
+              />
+              <FormErrorMessage>Password is required.</FormErrorMessage>
+            </FormControl>
+            <Button type="submit" colorScheme="brand" size="lg" w="100%" isLoading={loading} loadingText="Logging in...">
+              Login
+            </Button>
+          </Stack>
         </form>
-        <div className={styles.footer}>
+        <Text mt={4} fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
           Don't have an account?{' '}
-          <a className={styles.link} href="/register">
-            Register
-          </a>
-        </div>
-      </div>
-    </div>
+          <ChakraLink color="brand.500" href="/register">Register</ChakraLink>
+        </Text>
+      </Box>
+    </Box>
   );
 };
 

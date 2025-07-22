@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import styles from './register.module.css';
+import {
+  Box,
+  Heading,
+  Text,
+  Input,
+  Button,
+  Stack,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Link as ChakraLink,
+  useColorModeValue
+} from '@chakra-ui/react';
 
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -31,25 +43,15 @@ const Register = () => {
     setError('');
 
     try {
-      console.log('Sending registration request to:', `${API_BASE_URL}/api/auth/register`);
-      console.log('With data:', { username, email, password: '***' });
-
-      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
+      await axios.post(`${API_BASE_URL}/api/auth/register`, {
         username,
         email,
         password,
       });
 
-      const data = response.data;
-      console.log('Registration response:', data);
-
-      // ✅ Do NOT store token or user data here
       alert('Registration successful! Please log in.');
-
-      // ✅ Redirect to login page
       navigate('/login');
     } catch (err) {
-      console.error('Registration error:', err);
       if (err.response) {
         setError(err.response.data?.message || 'Registration failed. Please try again.');
       } else if (err.request) {
@@ -62,56 +64,89 @@ const Register = () => {
     }
   };
 
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const cardColor = useColorModeValue('gray.800', 'white');
+  const inputBg = useColorModeValue('gray.50', 'gray.700');
+
   return (
-    <div className={styles.authContainer}>
-      <div className={styles.card}>
-        <h2 className={styles.title}>Register for TuneTrekk</h2>
-        <p className={styles.linkText}>Create an account to start listening to music from anywhere!</p>
-        {error && <div className={styles.error}>{error}</div>}
+    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg={useColorModeValue('gray.50', 'gray.900')}>
+      <Box bg={cardBg} color={cardColor} p={8} borderRadius="xl" boxShadow="lg" w="100%" maxW="400px">
+        <Heading as="h1" size="xl" mb={2} textAlign="center">Register</Heading>
+        <Text fontSize="md" color={useColorModeValue('gray.500', 'gray.300')} mb={6} textAlign="center">Create your TuneTrekk account</Text>
+        {error && <Text color="red.500" mb={4} textAlign="center">{error}</Text>}
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className={styles.input}
-            minLength="6"
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className={styles.input}
-            minLength="6"
-          />
-          <button type="submit" disabled={loading} className={styles.button}>
-            {loading ? 'Registering...' : 'Register'}
-          </button>
+          <Stack spacing={4}>
+            <FormControl isInvalid={!!error && !username}>
+              <FormLabel htmlFor="username">Username</FormLabel>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+                bg={inputBg}
+              />
+              <FormErrorMessage>Username is required.</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!error && !email}>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                bg={inputBg}
+              />
+              <FormErrorMessage>Email is required.</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!error && !password}>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                bg={inputBg}
+              />
+              <FormErrorMessage>Password is required.</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!error && !confirmPassword}>
+              <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                bg={inputBg}
+              />
+              <FormErrorMessage>Confirm your password.</FormErrorMessage>
+            </FormControl>
+            <Button type="submit" colorScheme="brand" size="lg" w="100%" isLoading={loading} loadingText="Registering...">
+              Register
+            </Button>
+          </Stack>
         </form>
-        <p className={styles.linkText}>
-          Already have an account? <a href="/login" className={styles.link}>Login</a>
-        </p>
-      </div>
-    </div>
+        <Text mt={4} fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')} textAlign="center">
+          Already have an account?{' '}
+          <ChakraLink color="brand.500" href="/login">Login</ChakraLink>
+        </Text>
+      </Box>
+    </Box>
   );
 };
 

@@ -33,31 +33,16 @@ function App() {
     <Router>
       <Navbar onSearch={handleSearch} />
       <Routes>
-        <Route path="/" element={<Home searchQuery={searchQuery} />} />
-        <Route path="/explore" element={<Explore searchQuery={searchQuery} />} />
-        <Route path="/about" element={<About />} />
-        
-        {/* Guest routes - only accessible when not logged in */}
-        <Route path="/login" element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        } />
-        
-        <Route path="/register" element={
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        } />
-
-<Route path="/favourites" element={<Favourites />} />
-        
         {/* Protected routes - only accessible when logged in */}
-        <Route path="/accountdetails" element={
-          <ProtectedRoute>
-            <AccountDetails />
-          </ProtectedRoute>
-        } />
+        <Route path="/" element={<ProtectedRoute><Home searchQuery={searchQuery} /></ProtectedRoute>} />
+        <Route path="/explore" element={<ProtectedRoute><Explore searchQuery={searchQuery} /></ProtectedRoute>} />
+        <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+        <Route path="/favourites" element={<ProtectedRoute><Favourites /></ProtectedRoute>} />
+        <Route path="/accountdetails" element={<ProtectedRoute><AccountDetails /></ProtectedRoute>} />
+
+        {/* Guest routes - only accessible when not logged in */}
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
       </Routes>
     </Router>
   );

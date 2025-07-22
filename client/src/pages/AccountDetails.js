@@ -1,216 +1,134 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import styles from './AccountDetails.module.css';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Heading,
+  Text,
+  Stack,
+  Button,
+  Divider,
+  Spinner
+} from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 
-const API_BASE_URL = 'http://localhost:5000';
+const MotionBox = motion(Box);
+const MotionHeading = motion(Heading);
+const MotionStack = motion(Stack);
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.15,
+      duration: 0.7,
+      ease: 'easeOut',
+    },
+  }),
+};
 
 const AccountDetails = () => {
-  const navigate = useNavigate();
-  
-  // State for password change form
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  
-  // User data state
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
-    const userInfoStr = localStorage.getItem('userInfo');
-    if (!userInfoStr) {
-      // Redirect to login if not logged in
-      navigate('/login');
-      return;
+    setLoading(true);
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      setUserData(JSON.parse(userInfo));
     }
-
-    try {
-      // Parse user data - should be directly accessible now (not nested)
-      const userInfo = JSON.parse(userInfoStr);
-      setUserData(userInfo);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error parsing user data from localStorage", error);
-      localStorage.removeItem('userInfo'); // Clear invalid data
-      navigate('/login'); // Redirect to login
-    }
-  }, [navigate]);
-
-  // Handle password change form submission
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    
-    // Validate passwords
-    if (newPassword !== confirmPassword) {
-      setError('New passwords do not match');
-      return;
-    }
-    
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        setError('Authentication token missing. Please log in again.');
-        return;
-      }
-
-      // Send password change request to server
-      const response = await axios.post(
-        `${API_BASE_URL}/api/auth/change-password`,
-        {
-          currentPassword,
-          newPassword
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      if (response.data) {
-        // Update user data in state and localStorage with new password
-        const updatedUserData = {
-          ...userData,
-          password: newPassword
-        };
-        localStorage.setItem('userInfo', JSON.stringify(updatedUserData));
-        setUserData(updatedUserData);
-        
-        // Show success message
-        setSuccess('Password updated successfully');
-        
-        // Reset form
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        
-        // Hide form after successful update
-        setTimeout(() => {
-          setShowPasswordForm(false);
-          setSuccess('');
-        }, 2000);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update password. Please try again.');
-    }
-  };
+    setLoading(false);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('userInfo');
     localStorage.removeItem('token');
-    navigate('/login');
+    window.location.href = '/login';
   };
 
-  // If data is still loading
   if (loading) {
-    return <div className={styles.loading}>Loading account details...</div>;
-  }
-
-  // If user data not found
-  if (!userData) {
-    return <div className={styles.error}>Unable to load account details. Please log in again.</div>;
+    return (
+      <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="transparent">
+        <Spinner size="xl" color="brand.500" />
+      </Box>
+    );
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Account Details</h1>
-        <p className={styles.subtitle}>Welcome back, {userData.username}!</p>
-        {error && <div className={styles.error}>{error}</div>}
-        {success && <div className={styles.success}>{success}</div>}
-        
-        <div className={styles.detailsContainer}>
-          <div className={styles.detailItem}>
-            <div className={styles.label}>Username:</div>
-            <div className={styles.value}>{userData.username}</div>
-          </div>
-          
-          <div className={styles.detailItem}>
-            <div className={styles.label}>Email:</div>
-            <div className={styles.value}>{userData.email}</div>
-          </div>
-          
-          <div className={styles.detailItem}>
-            <div className={styles.label}>Password:</div>
-            <div className={styles.value}>{userData.password?.toUpperCase() || '********'}</div>
-          </div>
-          
-          <div className={styles.detailItem}>
-            <div className={styles.label}>Account Created:</div>
-            <div className={styles.value}>
-              {userData.createdAt
-                ? new Date(userData.createdAt).toLocaleDateString()
-                : 'Not available'}
-            </div>
-          </div>
-        </div>
-        
-        {!showPasswordForm ? (
-          <button
-            className={styles.button}
-            onClick={() => setShowPasswordForm(true)}
-          >
-            Change Password
-          </button>
+    <Box
+      minH="100vh"
+      w="full"
+      px={{ base: 2, md: 8 }}
+      py={12}
+      pt={{ base: 24, md: 28 }}
+      sx={{
+        background: `radial-gradient(ellipse at 50% 40%, #1A1130 0%, #0D0C0F 100%)`,
+      }}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="flex-start"
+    >
+      <MotionBox
+        maxW="lg"
+        w="full"
+        mx="auto"
+        bg="whiteAlpha.50"
+        borderRadius="2xl"
+        boxShadow="0 4px 24px 0 rgba(0,0,0,0.10)"
+        border="1px solid rgba(255,255,255,0.10)"
+        backdropFilter="blur(8px)"
+        p={{ base: 6, md: 10 }}
+        mt={0}
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+      >
+        <MotionHeading
+          as="h2"
+          size="2xl"
+          color="white"
+          textAlign="center"
+          fontWeight="extrabold"
+          mb={8}
+          letterSpacing="tight"
+          variants={fadeInUp}
+          custom={0}
+        >
+          Account Details
+        </MotionHeading>
+        <MotionStack spacing={4} mb={6} variants={fadeInUp} custom={1}>
+          <Box>
+            <Text fontWeight="bold" color="brand.400">Username:</Text>
+            <Text color="white" fontSize="lg">{userData?.username}</Text>
+          </Box>
+          <Box>
+            <Text fontWeight="bold" color="brand.400">Email:</Text>
+            <Text color="white" fontSize="lg">{userData?.email}</Text>
+          </Box>
+          <Box>
+            <Text fontWeight="bold" color="brand.400">Account Created:</Text>
+            <Text color="white" fontSize="lg">{userData?.createdAt ? new Date(userData.createdAt).toLocaleString() : 'N/A'}</Text>
+          </Box>
+        </MotionStack>
+        <Divider my={4} borderColor="whiteAlpha.300" />
+        {showPasswordForm ? (
+          <Box mb={4}>
+            <Text color="white" mb={2}>Password change form goes here.</Text>
+            <Button colorScheme="brand" w="100%" mb={2}>Submit</Button>
+            <Button variant="ghost" w="100%" onClick={() => setShowPasswordForm(false)}>Cancel</Button>
+          </Box>
         ) : (
-          <div className={styles.passwordChangeContainer}>
-            <h2>Change Password</h2>
-            <form onSubmit={handlePasswordChange}>
-              <input
-                type="password"
-                placeholder="Current Password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className={styles.input}
-                required
-              />
-              <input
-                type="password"
-                placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className={styles.input}
-                required
-                minLength="6"
-              />
-              <input
-                type="password"
-                placeholder="Confirm New Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={styles.input}
-                required
-              />
-              <div className={styles.buttonGroup}>
-                <button type="button" className={styles.cancelButton} onClick={() => setShowPasswordForm(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.saveButton}>
-                  Update Password
-                </button>
-              </div>
-            </form>
-          </div>
+          <Button colorScheme="brand" w="100%" mb={4} onClick={() => setShowPasswordForm(true)}>
+            Change Password
+          </Button>
         )}
-        
-        <button onClick={handleLogout} className={styles.logoutButton}>
+        <Button colorScheme="red" w="100%" onClick={handleLogout} mt={2}>
           Logout
-        </button>
-      </div>
-    </div>
+        </Button>
+      </MotionBox>
+    </Box>
   );
 };
 
