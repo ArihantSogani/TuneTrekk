@@ -15,7 +15,7 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 
-const API_BASE_URL = 'http://localhost:5000';
+// const API_BASE_URL = 'http://localhost:5000';
 
 const Register = () => {
   const [username, setUsername] = useState('');
